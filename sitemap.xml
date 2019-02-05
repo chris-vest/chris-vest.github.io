@@ -3,17 +3,71 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>//chrisve.st/about/</loc>
+    <lastmod>2019-02-02T19:34:15+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//chrisve.st/posts/vault-pki-strimzi/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>//chrisve.st/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>//chrisve.st/tags/kafka/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//chrisve.st/tags/kubernetes/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//chrisve.st/tags/pki/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//chrisve.st/posts/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//chrisve.st/tags/strimzi/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>//chrisve.st/tags/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//chrisve.st/categories/tech/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//chrisve.st/tags/vault/</loc>
+    <lastmod>2019-02-02T12:14:31+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>//chrisve.st/</loc>
+    <lastmod>2019-02-02T19:34:15+00:00</lastmod>
     <priority>0</priority>
   </url>
   

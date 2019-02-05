@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>chris vest</title>
-    <link>//chrisve.st/</link>
-    <description>Recent content on chris vest</description>
+    <title>Strimzi on chris vest</title>
+    <link>//chrisve.st/tags/strimzi/</link>
+    <description>Recent content in Strimzi on chris vest</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 02 Feb 2019 19:34:15 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 02 Feb 2019 12:14:31 +0000</lastBuildDate>
     
-	<atom:link href="//chrisve.st/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="//chrisve.st/tags/strimzi/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>About</title>
-      <link>//chrisve.st/about/</link>
-      <pubDate>Sat, 02 Feb 2019 19:34:15 +0000</pubDate>
-      
-      <guid>//chrisve.st/about/</guid>
-      <description>Profile Name: Christopher Vest
-Profession: DevOps Engineer
-Location: London, UK</description>
-    </item>
     
     <item>
       <title>Using Vault PKI with the Strimzi Kafka Operator on Kubernetes</title>

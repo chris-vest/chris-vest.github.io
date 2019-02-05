@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Chris Vest">
+    <meta name="description" content="Chris Vest&#39;s personal website">
+    <meta name="keywords" content="blog,personal,devops,kubernetes,operator,controller">
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Using Vault PKI with the Strimzi Kafka Operator on Kubernetes"/>
+<meta name="twitter:description" content="Using the Vault PKI secrets engine to set up a CA to use with the Strimzi Kafka Operator"/>
+
+
+    <base href="//chrisve.st/posts/vault-pki-strimzi/">
+    <title>
+  Using Vault PKI with the Strimzi Kafka Operator on Kubernetes · chris vest
+</title>
+
+    <link rel="canonical" href="//chrisve.st/posts/vault-pki-strimzi/">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Merriweather:300,700|Source+Code+Pro:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" integrity="sha256-oSrCnRYXvHG31SBifqP2PM1uje7SJUyX0nTwO2RJV54=" crossorigin="anonymous" />
+
+    
+      
+      
+      <link rel="stylesheet" href="//chrisve.st/css/coder.min.ac37073bc2826cd28ef57364a9fe339de7ebcb26dafc22fd832cb35cf5b1d048.css" integrity="sha256-rDcHO8KCbNKO9XNkqf4znefryyba/CL9gyyzXPWx0Eg=" crossorigin="anonymous" media="screen" />
+    
+
+    
+
+    
+
+    
+      <link rel="stylesheet" href="//chrisve.st/css/custom.css">
+    
+
+    <link rel="icon" type="image/png" href="//chrisve.st/img/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="//chrisve.st/img/favicon-16x16.png" sizes="16x16">
+
+    
+
+    <meta name="generator" content="Hugo 0.54-DEV" />
+  </head>
+
+  <body class=" ">
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="//chrisve.st/">
+      chris vest
+    </a>
+    <input type="checkbox" id="menu-toggle" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="fas fa-bars"></i></label>
+    <ul class="navigation-list">
+      
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="//chrisve.st/about/">About</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="//chrisve.st/posts/">Blog</a>
+          </li>
+        
+      
+      
+    </ul>
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">Using Vault PKI with the Strimzi Kafka Operator on Kubernetes</h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fas fa-calendar"></i>
+              <time datetime='2019-02-02T12:14:31Z'>
+                February 2, 2019
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fas fa-clock"></i>
+              9 minutes read
+            </span>
+          </div>
+          <div class="categories">
+  <i class="fas fa-folder"></i>
+    <a href="//chrisve.st/categories/tech/">tech</a></div>
+
+          <div class="tags">
+  <i class="fas fa-tag"></i>
+    <a href="//chrisve.st/tags/vault/">vault</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/pki/">pki</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/strimzi/">strimzi</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/kafka/">kafka</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/kubernetes/">kubernetes</a></div>
+
+        </div>
+      </header>
+
+      <div>
+        <p>Securing Kafka can be difficult. Securing Kafka on Kubernetes can also be diffult. But using Strimzi&rsquo;s Kafka Operator makes it easy!</p>
+
+<p>Below you will find a guide on how to use the Vault PKI secrets engine to generate an intermediate CA to use with the Strimzi Kafka Operator.</p>
+
+<hr />
+
+<h2 id="a-brief-introduction-to-vault">A brief introduction to Vault</h2>
+
+<p>If you&rsquo;re here you probably know what <a href="https://www.vaultproject.io/">Vault</a> is and why it&rsquo;s useful; but for the uninitiated here is a brief description from the creators themselves. The Hashicorp Vault project &ldquo;secures, stores, and tightly controls access to tokens, passwords, certificates, API keys, and other secrets in modern computing [&hellip;]&ldquo;.</p>
+
+<p>So how does Vault fit in with Strimzi and Kafka? Well, Vault has the concept of <a href="https://www.vaultproject.io/docs/secrets/"><code>Secrets Engines</code></a>:</p>
+
+<blockquote>
+<p>Secrets engines are components which store, generate, or encrypt data. Secrets engines are incredibly flexible, so it is easiest to think about them in terms of their function. Secrets engines are provided some set of data, they take some action on that data, and they return a result.
+Some secrets engines simply store and read data - like encrypted Redis/Memcached. Other secrets engines connect to other services and generate dynamic credentials on demand. Other secrets engines provide encryption as a service, totp [time-based one-time password] generation, certificates, and much more.</p>
+</blockquote>
+
+<p>It is this last point, certificates, which we are going to be looking at. Specifically, we will be using the <a href="https://www.vaultproject.io/docs/secrets/pki/index.html">Vault PKI Secrets Engine</a> to create a CA, which we will then install instead of using CA certificates and private keys generated by the <a href="http://strimzi.io/docs/master/#cluster-operator-str">Strimzi Cluster Operator</a>.</p>
+
+<hr />
+
+<h2 id="securing-a-kafka-cluster-on-kubernetes">Securing a Kafka cluster on Kubernetes</h2>
+
+<h3 id="the-incubator-kafka-charts">The <code>incubator</code> Kafka charts</h3>
+
+<p>Like me, you may have tried configuring TLS for Kafka using the <code>incubator</code> Helm charts (you can find them <a href="https://github.com/helm/charts/tree/master/incubator/kafka">here</a>), and realised that in fact this is <em>far from trivial</em>. I had initially configured an <code>initContainer</code> to get certificates from the Vault PKI backend using the Vault CLI, which did indeed work. However, in addition to the startup scripts in the main broker container and another custom <code>initContainer</code> I had configured to set up rack awareness, this caused the pod startup times to become quite long!</p>
+
+<p>At this point I had configured the brokers and clients with TLS, but what about the Zookeepers? Zookeeper does not support TLS, which is problematic if, for example, you are a financial organisation streaming sensitive data through your Kafka cluster. Even if you&rsquo;re not a fintech company, but you&rsquo;re a sensible individual with security concerns, this might be a deal breaker for you!</p>
+
+<h3 id="strimzi-security">Strimzi &amp; Security</h3>
+
+<p>Straight out of the box, <a href="http://strimzi.io/docs/master/#security-str">Strimzi provides all of this for you</a>:</p>
+
+<blockquote>
+<p>Strimzi supports encrypted communication between the Kafka and Strimzi components using the TLS protocol. Communication between Kafka brokers (interbroker communication), between Zookeeper nodes (internodal communication), and between these and the Strimzi operators is always encrypted. Communication between Kafka clients and Kafka brokers is encrypted according to how the cluster is configured. For the Kafka and Strimzi components, TLS certificates are also used for authentication.
+The Cluster Operator automatically sets up TLS certificates to enable encryption and authentication within your cluster. It also sets up other TLS certificates if you want to enable encryption or TLS authentication between Kafka brokers and clients.</p>
+</blockquote>
+
+<p>By default, Strimzi generates two CAs, one for the cluster and another for clients, storing the certificates and private keys as Kubernetes secrets.</p>
+
+<ul>
+<li>Cluster CA - all internal communication within the cluster and encryption with clients</li>
+<li>Client CA - all client communication for supporting TLS mutual authentication</li>
+</ul>
+
+<p>Using these secrets, Strimzi generates certificates for all of the components in the cluster, which in turn ensures all communication is encrypted!</p>
+
+<h6 id="n-b-this-post-only-deals-with-the-cluster-ca"><em>N.B. This post only deals with the Cluster CA!</em></h6>
+
+<h3 id="bringing-your-own-ca">Bringing your own CA</h3>
+
+<p>Now, in order to bring your own CA, you need to do this yourself and add the necessary certificate and key as Kubernetes secrets manually, adding the following labels:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  strimzi.io/kind=<span style="font-style:italic">&#34;Kafka&#34;</span>
+  strimzi.io/cluster=<span style="font-style:italic">&#34;</span><span style="font-weight:bold;font-style:italic">${</span>clusterName<span style="font-weight:bold;font-style:italic">}</span><span style="font-style:italic">&#34;</span></code></pre></div>
+<hr />
+
+<h2 id="why-vault">Why Vault?</h2>
+
+<p>Some reasons to use Vault:</p>
+
+<ul>
+<li>Open source​</li>
+<li>Battle tested, documented &amp; secure​</li>
+<li>Plethora of authentication methods​</li>
+<li>Extensible​</li>
+<li>Powerful auditing capabilities</li>
+</ul>
+
+<p>Specifically in this context of using Vault to create your own CA, it gives you more control over your TLS configuration. It provides a centralised place to manage your CAs, and the rest of your secrets required by your environment - having a single secrets store minimizes the attack surface by reducing secrets sprawl; you only have to focus on securing a single service!</p>
+
+<p>Vault integrates particularly well with Kubernetes, for example using the <a href="https://www.vaultproject.io/docs/auth/kubernetes.html">Kubernetes Auth Method</a>.</p>
+
+<p>See the Vault documentation for a full list of features:</p>
+
+<ul>
+<li><p><a href="https://www.vaultproject.io/docs/secrets/index.html">Secrets Engines</a></p></li>
+
+<li><p><a href="https://www.vaultproject.io/docs/auth/index.html">Auth Methods</a></p></li>
+</ul>
+
+<hr />
+
+<h2 id="configuration-of-the-vault-pki-secrets-engine">Configuration of the Vault PKI secrets engine</h2>
+
+<p>Assuming you have a Vault cluster running, you can <a href="https://learn.hashicorp.com/vault/secrets-management/sm-pki-engine">create your own CA by doing the following</a>:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="font-style:italic">## Creating the root CA:</span>
+<span style="font-style:italic">## First, enable the pki secrets engine at the pki path:</span>
+$ vault secrets enable pki
+
+<span style="font-style:italic">## Tune the pki secrets engine to issue certificates with a maximum time-to-live (TTL)</span> 
+<span style="font-style:italic">##   of 87600 hours (10 years):</span>
+$ vault secrets tune -max-lease-ttl=87600h pki
+
+<span style="font-style:italic">## Generate the root CA, extracting the root CA&#39;s certificate to root.crt; the secret</span>
+<span style="font-style:italic">##   key is not exported!</span>
+$ vault write -field=certificate pki/root/generate/internal common_name=<span style="font-style:italic">&#34;example.com&#34;</span> <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>       ttl=87600h &gt; root.crt
+
+<span style="font-style:italic">## This generates a new self-signed CA certificate and private key. Vault will automatically</span>
+<span style="font-style:italic">##   revoke the generated root at the end of its lease period (TTL); the CA certificate will</span>
+<span style="font-style:italic">##     sign its own Certificate Revocation List (CRL).</span>
+
+<span style="font-style:italic">## Configure the CA and CRL URLs:</span>
+$ vault write pki/config/urls <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>       issuing_certificates=<span style="font-style:italic">&#34;http://127.0.0.1:8200/v1/pki/ca&#34;</span> <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>       crl_distribution_points=<span style="font-style:italic">&#34;http://127.0.0.1:8200/v1/pki/crl&#34;</span>
+
+<span style="font-style:italic">## Creating the intermediate CA:</span>
+<span style="font-style:italic">## First, enable the pki secrets engine at the pki_int path:</span>
+$ vault secrets enable -path=pki_int pki
+
+<span style="font-style:italic">## Tune the pki_int secrets engine to issue certificates with a maximum time-to-live (TTL)</span>
+<span style="font-style:italic">##   of 43800 hours (5 years):</span>
+$ vault secrets tune -max-lease-ttl=43800h pki_int
+
+<span style="font-style:italic">## Execute the following command to generate an intermediate and save the CSR as</span> 
+<span style="font-style:italic">##   pki_intermediate.csr:</span>
+$ vault write -format=json pki_int/intermediate/generate/exported <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>        common_name=<span style="font-style:italic">&#34;example.com Intermediate Authority&#34;</span> ttl=<span style="font-style:italic">&#34;43800h&#34;</span> format=<span style="font-style:italic">&#34;pem&#34;</span> &gt; pki_intermediate
+
+<span style="font-style:italic">## Extract the private key &amp; certificate signing request from the previous command&#39;s output:</span>
+$ jq -r <span style="font-style:italic">&#39;.data.private_key&#39;</span> &lt; pki_intermediate &gt; intermediate.key.pem
+$ jq -r <span style="font-style:italic">&#39;.data.csr&#39;</span> &lt; pki_intermediate &gt; pki_intermediate.csr
+
+<span style="font-style:italic">## Sign the intermediate certificate with the root certificate and save the generated</span>
+<span style="font-style:italic">##   certificate as intermediate.cert.pem:</span>
+$ vault write -format=json pki/root/sign-intermediate csr=@pki_intermediate.csr <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>        format=<span style="font-style:italic">&#34;pem&#34;</span> <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>        | jq -r <span style="font-style:italic">&#39;.data.certificate&#39;</span> &gt; intermediate.cert.pem
+
+<span style="font-style:italic">## Once the CSR is signed and the root CA returns a certificate, it can be imported back</span> 
+<span style="font-style:italic">##   into Vault:</span>
+$ vault write pki_int/intermediate/set-signed certificate=@intermediate.cert.pem</code></pre></div>
+<p>You now have all the files required to install your own CA with Strimzi - the root CA certificate from the creation of the root CA, <code>root.crt</code>, the private key from the generation of the intermediate CA, <code>intermediate.key.pem</code>, and the intermediate CA certificate from the signing of the intermediate CSR by the root, <code>intermediate.cert.pem</code>. You will need both of these files to create your CA chain, <code>intermediate.chain.pem</code>:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat intermediate.cert.pem &gt; intermediate.chain.pem
+$ cat root.crt &gt;&gt; intermediate.chain.pem</code></pre></div>
+<h3 id="separate-intermediate-ca-per-cluster">Separate intermediate CA per cluster</h3>
+
+<p>Now that you have an intermediate CA, you might be tempted to use the same certificate and key for multiple clusters. However, considering Strimzi generates certificates outside of Vault, the only way you can revoke those certificates is by revoking the intermediate CA itself. As such, you should have <em>a separate intermediate CA per cluster.</em></p>
+
+<h3 id="generating-certificates-using-vault-and-the-intermediate-ca">Generating certificates using Vault and the intermediate CA</h3>
+
+<p>If you want a client, for example, to be able to generate certificates using the intermediate CA, you&rsquo;ll need to set up a role for clients to use. More details on next steps <a href="https://learn.hashicorp.com/vault/secrets-management/sm-pki-engine#step-3-create-a-role">here</a>.</p>
+
+<hr />
+
+<h2 id="launching-your-kafka-cluster-using-the-vault-ca">Launching your Kafka cluster using the Vault CA</h2>
+
+<h3 id="adding-the-certificate-and-private-key-to-your-kubernetes-cluster">Adding the certificate and private key to your Kubernetes cluster</h3>
+
+<p>You need to create secrets <em>in your Strimzi namespace</em> manually with the two files we generated in the previous few steps. Remember to include the labels, otherwise Strimzi will not pick them up.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="font-style:italic">## Private Key</span>
+kubectl create secret -n <span style="font-weight:bold;font-style:italic">${</span>strimziNamespace<span style="font-weight:bold;font-style:italic">}</span> generic <span style="font-weight:bold;font-style:italic">${</span>clusterName<span style="font-weight:bold;font-style:italic">}</span>-cluster-ca <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>  --from-file=ca.key=intermediate.key.pem <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>  &amp;&amp; kubectl label secret -n <span style="font-weight:bold;font-style:italic">${</span>strimziNamespace<span style="font-weight:bold;font-style:italic">}</span> <span style="font-weight:bold;font-style:italic">${</span>clusterName<span style="font-weight:bold;font-style:italic">}</span>-cluster-ca <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>  strimzi.io/kind=<span style="font-style:italic">&#34;Kafka&#34;</span> <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>  strimzi.io/cluster=<span style="font-style:italic">&#34;</span><span style="font-weight:bold;font-style:italic">${</span>clusterName<span style="font-weight:bold;font-style:italic">}</span><span style="font-style:italic">&#34;</span>
+
+<span style="font-style:italic">## Certificate</span>
+kubectl create secret -n <span style="font-weight:bold;font-style:italic">${</span>strimziNamespace<span style="font-weight:bold;font-style:italic">}</span> generic <span style="font-weight:bold;font-style:italic">${</span>clusterName<span style="font-weight:bold;font-style:italic">}</span>-cluster-ca-cert <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>  --from-file=ca.crt=intermediate.chain.pem <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>  &amp;&amp; kubectl label secret -n <span style="font-weight:bold;font-style:italic">${</span>strimziNamespace<span style="font-weight:bold;font-style:italic">}</span> <span style="font-weight:bold;font-style:italic">${</span>clusterName<span style="font-weight:bold;font-style:italic">}</span>-cluster-ca-cert <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>  strimzi.io/kind=<span style="font-style:italic">&#34;Kafka&#34;</span> <span style="font-weight:bold;font-style:italic">\
+</span><span style="font-weight:bold;font-style:italic"></span>  strimzi.io/cluster=<span style="font-style:italic">&#34;</span><span style="font-weight:bold;font-style:italic">${</span>clusterName<span style="font-weight:bold;font-style:italic">}</span><span style="font-style:italic">&#34;</span></code></pre></div>
+<h3 id="creating-your-kafka-cluster-resource">Creating your Kafka cluster resource</h3>
+
+<p>You&rsquo;re almost there! Just a few more steps:</p>
+
+<ol>
+<li>Deploy the Strimzi operator</li>
+<li>Apply your <code>Kafka</code> CRD, remembering to set the following parameter:</li>
+</ol>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">...
+spec:
+  clusterCa:
+    generateCertificateAuthority: <span style="font-weight:bold">false</span>
+...</code></pre></div>
+<h4 id="a-few-things-to-note">A few things to note&hellip;</h4>
+
+<ul>
+<li>The <code>common_name</code> cannot contain a wildcard, so set it to something sensible. Otherwise you&rsquo;ll see something like this in your <code>tls-sidecar</code>:</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">LOG5[1:139683950376704]: Service [zookeeper-2181] accepted connection from 127.0.0.1:33576
+LOG5[1:139683950376704]: connect_blocking: connected 10.100.241.50:2181
+LOG5[1:139683950376704]: Service [zookeeper-2181] connected remote server from 10.100.214.45:37700
+LOG4[1:139683950376704]: CERT: Verification error: permitted subtree violation
+LOG4[1:139683950376704]: Certificate check failed: depth=0, /O=io.strimzi/CN=zookeeper
+LOG3[1:139683950376704]: SSL_connect: 14090086: error:14090086:SSL routines:ssl3_get_server_certificate:certificate verify failed</code></pre></div>
+<ul>
+<li>If you are getting an error like this, make sure you have correctly signed your intermediate CA with the root CA:</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">CERT: Verification error: unable to get issuer certificate
+Certificate check failed: depth=1, /O=${O}/CN=${CN}
+SSL_connect: 14090086: error:14090086:SSL routines:ssl3_get_server_certificate:certificate verify failed</code></pre></div>
+<p>When debugging something like this, remember:
+1) <code>depth=2</code> is the root CA certificate
+2) <code>depth=1</code> is the intermediate CA certificate
+3) <code>depth=0</code> is the primary certificate</p>
+
+<ul>
+<li><p>When generating your intermediate CA, <code>type</code> needs to be <code>exported</code>, otherwise the command will <em>not</em> return the private key! <a href="https://www.vaultproject.io/api/secret/pki/index.html#generate-root">More information on that here.</a></p></li>
+
+<li><p>If you would prefer to set up Vault PKI this using the UI or the API, there is documentation for that <a href="https://www.vaultproject.io/docs/secrets/pki/index.html">here</a>. <em>Gotcha!</em> Remember the importance of the <code>type</code>, which needs to be <code>exported</code>. The Hashicorp docs use <code>internal</code>.</p></li>
+
+<li><p>You might be tempted to just use the root CA&hellip; But <em>definitely use an intermediate CA!</em> <a href="https://www.whichssl.com/intermediate-certificates.html">Why?</a></p></li>
+</ul>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>So we&rsquo;ve looked at how to use Vault PKI secrets engine to generate an intermediate CA to use in your Kafka cluster resource. Hopefully you should now have a Kafka CRD applied, with the cluster running, which is using your Vault-generated CA certificate and private key!</p>
+
+<hr />
+
+<h3 id="useful-bits">Useful Bits</h3>
+
+<h4 id="deploying-vault">Deploying Vault</h4>
+
+<p><a href="https://github.com/sethvargo/vault-on-gke">Seth Vargo&rsquo;s <code>vault-on-gke</code></a> project gives you everything you need to create a Vault cluster on GKE, backed by GCS. This project was developed with the help of Google&rsquo;s security team, so it is hopefully quite secure! It contains Kelsey Hightower&rsquo;s <a href="https://github.com/kelseyhightower/vault-on-google-kubernetes-engine"><code>vault-on-google-kubernetes-engine</code> project</a> captured as <a href="https://www.terraform.io/">Terraform.</a></p>
+
+<h4 id="resources">Resources</h4>
+
+<p><a href="https://www.thesslstore.com/blog/root-certificates-intermediate/">The difference between root certificates and intermediate certificates.</a></p>
+
+<p><a href="https://smallstep.com/blog/everything-pki.html">Everything you should know about certificates and PKI but are too afraid to ask.</a></p>
+      </div>
+
+      <footer>
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "spamburger" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </footer>
+    </article>
+
+    
+  </section>
+
+      </div>
+
+      <footer class="footer">
+  <section class="container">
+    
+      <p>Things and stuff.</p>
+    
+     © 2019
+    
+    
+  </section>
+</footer>
+
+    </main>
+
+    
+
+  </body>
+
+</html>
