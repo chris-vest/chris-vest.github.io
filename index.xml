@@ -17,9 +17,7 @@
       <pubDate>Tue, 05 Feb 2019 19:00:00 +0000</pubDate>
       
       <guid>//chrisve.st/about/</guid>
-      <description>Who am I? Name: Christopher Vest
-Profession: DevOps Engineer
-Location: London, UK
+      <description>Who am I? My name is Chris Vest and I work as a DevOps Engineer in London, United Kingdom.
 What is this? This is my personal website.
 Why? In December 2018, I read an article discussing how a personal website could replace Facebook. Over the last few years I have become increasingly frustrated with social media - as such I was intrigued with this idea. I decided to give it a go, with the intention of perhaps phasing out other forms of social media entirely.</description>
     </item>
@@ -27,10 +25,22 @@ Why? In December 2018, I read an article discussing how a personal website could
     <item>
       <title>Using Vault PKI with the Strimzi Kafka Operator on Kubernetes</title>
       <link>//chrisve.st/posts/vault-pki-strimzi/</link>
-      <pubDate>Sat, 02 Feb 2019 12:14:31 +0000</pubDate>
+      <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
       
       <guid>//chrisve.st/posts/vault-pki-strimzi/</guid>
-      <description>&lt;p&gt;Securing Kafka can be difficult. Securing Kafka on Kubernetes can also be diffult. But using Strimzi&amp;rsquo;s Kafka Operator makes it easy!&lt;/p&gt;
+      <description>&lt;blockquote&gt;
+&lt;p&gt;I originally wrote this post for the &lt;a href=&#34;https://strimzi.io/blog/&#34;&gt;Strimzi blog&lt;/a&gt; after having worked on it for a project at my work. I figured it would benefit the community to know how I had done this, especially since I had received so much help in general regarding running Kafka on Kubernetes from the Strimzi guys. This seemed like an appropriate way to give back!&lt;/p&gt;
+
+&lt;p&gt;Make sure to check out the &lt;a href=&#34;https://strimzi.io/&#34;&gt;Strimzi project&lt;/a&gt;!&lt;/p&gt;
+
+&lt;p&gt;The only thing I have changed since publishing the post originally is an additional link at the bottom of the article.&lt;/p&gt;
+
+&lt;p&gt;Here is the post in full&amp;hellip;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Securing Kafka can be difficult. Securing Kafka on Kubernetes can also be diffult. But using Strimzi&amp;rsquo;s Kafka Operator makes it easy!&lt;/p&gt;
 
 &lt;p&gt;Below you will find a guide on how to use the Vault PKI secrets engine to generate an intermediate CA to use with the Strimzi Kafka Operator.&lt;/p&gt;</description>
     </item>
