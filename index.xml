@@ -6,7 +6,7 @@
     <description>Recent content on chris vest</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 02 Feb 2019 19:34:15 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 05 Feb 2019 19:00:00 +0000</lastBuildDate>
     
 	<atom:link href="//chrisve.st/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,12 +14,14 @@
     <item>
       <title>About</title>
       <link>//chrisve.st/about/</link>
-      <pubDate>Sat, 02 Feb 2019 19:34:15 +0000</pubDate>
+      <pubDate>Tue, 05 Feb 2019 19:00:00 +0000</pubDate>
       
       <guid>//chrisve.st/about/</guid>
-      <description>Profile Name: Christopher Vest
+      <description>Who am I? Name: Christopher Vest
 Profession: DevOps Engineer
-Location: London, UK</description>
+Location: London, UK
+What is this? This is my personal website.
+Why? In December 2018, I read an article discussing how a personal website could replace Facebook. Over the last few years I have become increasingly frustrated with social media - as such I was intrigued with this idea. I decided to give it a go, with the intention of perhaps phasing out other forms of social media entirely.</description>
     </item>
     
     <item>
