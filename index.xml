@@ -28,21 +28,9 @@ Why? In December 2018, I read an article discussing how a personal website could
       <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
       
       <guid>//chrisve.st/posts/vault-pki-strimzi/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;I originally wrote this post for the &lt;a href=&#34;https://strimzi.io/blog/&#34;&gt;Strimzi blog&lt;/a&gt; after having worked on it for a project at my work. I figured it would benefit the community to know how I had done this, especially since I had received so much help in general regarding running Kafka on Kubernetes from the Strimzi guys. This seemed like an appropriate way to give back!&lt;/p&gt;
-
-&lt;p&gt;Make sure to check out the &lt;a href=&#34;https://strimzi.io/&#34;&gt;Strimzi project&lt;/a&gt;!&lt;/p&gt;
-
-&lt;p&gt;The only thing I have changed since publishing the post originally is an additional link at the bottom of the article. &lt;a href=&#34;https://strimzi.io/2018/11/16/using-vault-with-strimzi.html&#34;&gt;The original article is here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Here is the post in full&amp;hellip;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;Securing Kafka can be difficult. Securing Kafka on Kubernetes can also be diffult. But using Strimzi&amp;rsquo;s Kafka Operator makes it easy!&lt;/p&gt;
-
-&lt;p&gt;Below you will find a guide on how to use the Vault PKI secrets engine to generate an intermediate CA to use with the Strimzi Kafka Operator.&lt;/p&gt;</description>
+      <description>I originally wrote this post for the Strimzi blog after having worked on it for a project at my work. I figured it would benefit the community to know how I had done this. Since I had received so much help in general regarding running Kafka on Kubernetes from the Strimzi guys, this seemed like an appropriate way to give back!
+Here is the post in full&amp;hellip;
+Make sure to check out the Strimzi project!</description>
     </item>
     
   </channel>
