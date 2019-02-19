@@ -6,10 +6,20 @@
     <description>Recent content on chris vest</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 05 Feb 2019 19:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 19 Feb 2019 13:23:25 +0000</lastBuildDate>
     
 	<atom:link href="//chrisve.st/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Terraform Cycle</title>
+      <link>//chrisve.st/posts/terraform-cycle/</link>
+      <pubDate>Tue, 19 Feb 2019 13:23:25 +0000</pubDate>
+      
+      <guid>//chrisve.st/posts/terraform-cycle/</guid>
+      <description>Terraform Cycle error Using Seth Vargo&amp;rsquo;s project for running vault-on-gke, I ran into the Terraform Cycle error when pulling in the latest changes from his repo (which we had forked). Both Terraform and I were happy with the plan, so I decided to go ahead with the apply. That&amp;rsquo;s when I saw this:
+That&amp;rsquo;s not particularly clear, so I decided to run terraform graph -draw-cycles -type=apply. This proved to be useless, because it didn&amp;rsquo;t highlight any cycles at all.</description>
+    </item>
     
     <item>
       <title>About</title>
@@ -19,7 +29,7 @@
       <guid>//chrisve.st/about/</guid>
       <description>Who am I? My name is Chris Vest and I work as a DevOps Engineer in London, United Kingdom.
 What is this? This is my personal website.
-Why? In December 2018, I read an article discussing how a personal website could replace Facebook. Over the last few years I have become increasingly frustrated with social media - as such I was intrigued with this idea. I decided to give it a go, with the intention of perhaps phasing out other forms of social media entirely.</description>
+Why? In December 2018, I read an article discussing how a personal website could replace Facebook. Over the last few years I have become increasingly frustrated with social media - as such I was intrigued with this idea. So I decided to give it a go!</description>
     </item>
     
     <item>
