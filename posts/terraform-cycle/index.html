@@ -108,7 +108,7 @@ That&rsquo;s not particularly clear, so I decided to run terraform graph -draw-c
 
 <p>Using Seth Vargo&rsquo;s project for running <a href="https://github.com/sethvargo/vault-on-gke"><code>vault-on-gke</code></a>, I ran into the Terraform <code>Cycle</code> error when pulling in the latest changes from his repo (which we had forked). Both Terraform and I were happy with the <code>plan</code>, so I decided to go ahead with the <code>apply</code>. That&rsquo;s when I saw this:</p>
 
-<p><img src="../../images/terraform-cycle.png" alt="Terraform Cycle error" title="Terraform Cycle error" /></p>
+<p><img src="//chrisve.st/images/terraform-cycle.png" alt="Terraform Cycle error" title="Terraform Cycle error" /></p>
 
 <p>That&rsquo;s not particularly clear, so I decided to run <code>terraform graph -draw-cycles -type=apply</code>. This proved to be useless, because it didn&rsquo;t highlight any cycles at all.</p>
 
