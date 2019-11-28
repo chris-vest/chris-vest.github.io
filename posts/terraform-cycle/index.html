@@ -11,8 +11,8 @@
 
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Terraform Cycle"/>
-<meta name="twitter:description" content="Terraform Cycle error Using Seth Vargo&rsquo;s project for running vault-on-gke, I ran into the Terraform Cycle error when pulling in the latest changes from his repo (which we had forked). Both Terraform and I were happy with the plan, so I decided to go ahead with the apply. That&rsquo;s when I saw this:
-That&rsquo;s not particularly clear, so I decided to run terraform graph -draw-cycles -type=apply. This proved to be useless, because it didn&rsquo;t highlight any cycles at all."/>
+<meta name="twitter:description" content="Terraform Cycle error Using Seth Vargo&#39;s project for running vault-on-gke, I ran into the Terraform Cycle error when pulling in the latest changes from his repo (which we had forked). Both Terraform and I were happy with the plan, so I decided to go ahead with the apply. That&#39;s when I saw this:
+That&#39;s not particularly clear, so I decided to run terraform graph -draw-cycles -type=apply. This proved to be useless, because it didn&#39;t highlight any cycles at all."/>
 
 
     <base href="//chrisve.st/posts/terraform-cycle/">
@@ -45,7 +45,7 @@ That&rsquo;s not particularly clear, so I decided to run terraform graph -draw-c
 
     
 
-    <meta name="generator" content="Hugo 0.54-DEV" />
+    <meta name="generator" content="Hugo 0.60.0" />
   </head>
 
   <body class=" ">
@@ -102,21 +102,15 @@ That&rsquo;s not particularly clear, so I decided to run terraform graph -draw-c
       </header>
 
       <div>
-        
-
-<h2 id="terraform-cycle-error">Terraform Cycle error</h2>
-
-<p>Using Seth Vargo&rsquo;s project for running <a href="https://github.com/sethvargo/vault-on-gke"><code>vault-on-gke</code></a>, I ran into the Terraform <code>Cycle</code> error when pulling in the latest changes from his repo (which we had forked). Both Terraform and I were happy with the <code>plan</code>, so I decided to go ahead with the <code>apply</code>. That&rsquo;s when I saw this:</p>
-
-<p><img src="//chrisve.st/images/terraform-cycle.png" alt="Terraform Cycle error" title="Terraform Cycle error" /></p>
-
-<p>That&rsquo;s not particularly clear, so I decided to run <code>terraform graph -draw-cycles -type=apply</code>. This proved to be useless, because it didn&rsquo;t highlight any cycles at all.</p>
-
+        <h2 id="terraform-cycle-error">Terraform Cycle error</h2>
+<p>Using Seth Vargo's project for running <a href="https://github.com/sethvargo/vault-on-gke"><code>vault-on-gke</code></a>, I ran into the Terraform <code>Cycle</code> error when pulling in the latest changes from his repo (which we had forked). Both Terraform and I were happy with the <code>plan</code>, so I decided to go ahead with the <code>apply</code>. That's when I saw this:</p>
+<p><img src="//chrisve.st/images/terraform-cycle.png" alt="Terraform Cycle error" title="Terraform Cycle error"></p>
+<p>That's not particularly clear, so I decided to run <code>terraform graph -draw-cycles -type=apply</code>. This proved to be useless, because it didn't highlight any cycles at all.</p>
 <p>After some Googling, I ran across <a href="https://github.com/hashicorp/terraform/issues/11090#issuecomment-271173812">this comment from the man himself, Mitchell Hashimoto</a>. I gave it a go:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ terraform plan -out tfplan
 $ terraform graph -draw-cycles -type=apply tfplan <span style="font-weight:bold;font-style:italic">\
-</span><span style="font-weight:bold;font-style:italic"></span>  | dot -Tpng &gt; graph.png</code></pre></div>
-<p>This proved much more useful (albeit still unclear)&hellip; However, I could now see where the cyclical dependencies were occuring in my Terraform!</p>
+</span><span style="font-weight:bold;font-style:italic"></span>  | dot -Tpng &gt; graph.png
+</code></pre></div><p>This proved much more useful (albeit still unclear)&hellip; However, I could now see where the cyclical dependencies were occuring in my Terraform!</p>
 
       </div>
 

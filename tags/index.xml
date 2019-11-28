@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on chris vest</title>
@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>Kafka</title>
+      <title>kafka</title>
       <link>//chrisve.st/tags/kafka/</link>
       <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
       
@@ -21,7 +21,7 @@
     </item>
     
     <item>
-      <title>Kubernetes</title>
+      <title>kubernetes</title>
       <link>//chrisve.st/tags/kubernetes/</link>
       <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
       
@@ -30,7 +30,7 @@
     </item>
     
     <item>
-      <title>Pki</title>
+      <title>pki</title>
       <link>//chrisve.st/tags/pki/</link>
       <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
       
@@ -39,7 +39,7 @@
     </item>
     
     <item>
-      <title>Strimzi</title>
+      <title>strimzi</title>
       <link>//chrisve.st/tags/strimzi/</link>
       <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
       
@@ -48,7 +48,7 @@
     </item>
     
     <item>
-      <title>Vault</title>
+      <title>vault</title>
       <link>//chrisve.st/tags/vault/</link>
       <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
       
