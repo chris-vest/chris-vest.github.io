@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Chris Vest">
+    <meta name="description" content="Chris Vest&#39;s personal website">
+    <meta name="keywords" content="blog,personal,devops,kubernetes,operator,controller">
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Migrating to ArgoCD from Flux &amp; Flux Helm Operator"/>
+<meta name="twitter:description" content="Migrating Kubernetes resource ownership from Flux to ArgoCD"/>
+
+
+    <base href="//chrisve.st/posts/argo-cd-flux-migration/">
+    <title>
+  Migrating to ArgoCD from Flux &amp; Flux Helm Operator · chris vest
+</title>
+
+    <link rel="canonical" href="//chrisve.st/posts/argo-cd-flux-migration/">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Merriweather:300,700|Source+Code+Pro:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" integrity="sha256-oSrCnRYXvHG31SBifqP2PM1uje7SJUyX0nTwO2RJV54=" crossorigin="anonymous" />
+
+    
+      
+      
+      <link rel="stylesheet" href="//chrisve.st/css/coder.min.ac37073bc2826cd28ef57364a9fe339de7ebcb26dafc22fd832cb35cf5b1d048.css" integrity="sha256-rDcHO8KCbNKO9XNkqf4znefryyba/CL9gyyzXPWx0Eg=" crossorigin="anonymous" media="screen" />
+    
+
+    
+
+    
+
+    
+      <link rel="stylesheet" href="//chrisve.st/css/custom.css">
+    
+
+    <link rel="icon" type="image/png" href="//chrisve.st/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="//chrisve.st/images/favicon-16x16.png" sizes="16x16">
+
+    
+
+    <meta name="generator" content="Hugo 0.60.0" />
+  </head>
+
+  <body class=" ">
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="//chrisve.st/">
+      chris vest
+    </a>
+    <input type="checkbox" id="menu-toggle" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="fas fa-bars"></i></label>
+    <ul class="navigation-list">
+      
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="//chrisve.st/about/">About</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="//chrisve.st/posts/">Blog</a>
+          </li>
+        
+      
+      
+    </ul>
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">Migrating to ArgoCD from Flux &amp; Flux Helm Operator</h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fas fa-calendar"></i>
+              <time datetime='2019-11-28T10:46:21Z'>
+                November 28, 2019
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fas fa-clock"></i>
+              3 minutes read
+            </span>
+          </div>
+          <div class="categories">
+  <i class="fas fa-folder"></i>
+    <a href="//chrisve.st/categories/tech/">tech</a></div>
+
+          <div class="tags">
+  <i class="fas fa-tag"></i>
+    <a href="//chrisve.st/tags/kubernetes/">kubernetes</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/argo-cd/">argo-cd</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/argocd/">argocd</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/flux/">flux</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/weaveworks/">weaveworks</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/flux/">flux</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/helm/">helm</a>
+      <span class="separator">•</span>
+    <a href="//chrisve.st/tags/operator/">operator</a></div>
+
+        </div>
+      </header>
+
+      <div>
+        <h1 id="migrating-to-argocd-from-weaveworks-flux--flux-helm-operator">Migrating to ArgoCD from Weaveworks Flux &amp; Flux Helm Operator</h1>
+<ol>
+<li>
+<p>Add all raw manifests (i.e. not <code>HelmReleases</code>) to your repo(s) which ArgoCD is watching</p>
+</li>
+<li>
+<p>Add references to these manifests as <code>Applications</code> in ArgoCD - do not enable pruning unless you want to play with fire; you can also disable autosync if you want in order to avoid never-ending deployment cycles if differences are found between what Flux and ArgoCD see as the state. Example application:</p>
+</li>
+</ol>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: your-app
+  <span style="font-style:italic"># You&#39;ll usually want to add your resources to the argocd namespace.</span>
+  namespace: argocd
+spec:
+  <span style="font-style:italic"># The project the application belongs to.</span>
+  project: your-project
+
+  <span style="font-style:italic"># Source of the application manifests</span>
+  source:
+    repoURL: https://github.com/your/repo.git
+    targetRevision: master <span style="font-style:italic"># branch</span>
+    path: ./path/ <span style="font-style:italic"># path to manifests</span>
+
+    <span style="font-style:italic"># directory</span>
+    directory:
+      recurse: <span style="font-weight:bold">false</span>
+
+  <span style="font-style:italic"># Destination cluster and namespace to deploy the application</span>
+  destination:
+    server: https://your.k8s.api
+    namespace: <span style="font-style:italic">&#34;kube-system&#34;</span>
+
+  <span style="font-style:italic"># Sync policy</span>
+  syncPolicy:
+    automated:
+      <span style="font-style:italic"># Do not enable pruning yet!</span>
+      prune: <span style="font-weight:bold">false</span> <span style="font-style:italic"># Specifies if resources should be pruned during auto-syncing ( false by default ).</span>
+      selfHeal: <span style="font-weight:bold">true</span> <span style="font-style:italic"># Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).</span>
+
+  <span style="font-style:italic"># Ignore differences at the specified json pointers</span>
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /metadata/labels
+</code></pre></div><ol start="2">
+<li>
+<p>Make sure there are no notable differences using ArgoCD's <code>APP DIFF</code> feature - labels can mostly be ignored given the differences in how ArgoCD and Flux handle ownership - if there are differences, or errors in deploying the manifests, fix them!</p>
+</li>
+<li>
+<p>Migrate all Flux <code>HelmReleases</code> to ArgoCD <code>Applications</code> using a Helm source - again, do not enable pruning unless you want to play with fire! Remember to <a href="https://argoproj.github.io/argo-cd/user-guide/projects/#managing-projects">add the Helm source as an allowed source for your project</a>. Example <code>Application</code> using a Helm source:</p>
+</li>
+</ol>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-ingress
+  namespace: argocd
+spec:
+  project: your-project
+
+  source:
+    repoURL: <span style="font-style:italic">&#39;https://kubernetes-charts.storage.googleapis.com&#39;</span>
+    targetRevision: 1.6.17
+    path: <span style="font-style:italic">&#39;&#39;</span>
+    chart: nginx-ingress
+    helm:
+      releaseName: nginx-ingress
+      values: |<span style="font-style:italic">-
+</span><span style="font-style:italic">       </span><span style="font-style:italic"> </span><span style="font-style:italic">controller:</span>
+          ingressClass: nginx
+          publishService:
+            enabled: <span style="font-weight:bold">true</span>
+          replicaCount: 3
+ 
+  destination:
+    server: https://your.k8s.api
+    namespace: nginx
+  
+  <span style="font-style:italic"># Sync policy</span>
+  syncPolicy:
+    automated:
+      <span style="font-style:italic"># Do not enable pruning yet!</span>
+      prune: <span style="font-weight:bold">false</span> <span style="font-style:italic"># Specifies if resources should be pruned during auto-syncing ( false by default ).</span>
+      selfHeal: <span style="font-weight:bold">true</span> <span style="font-style:italic"># Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).</span>
+
+  <span style="font-style:italic"># Ignore differences at the specified json pointers</span>
+  ignoreDifferences: []
+</code></pre></div><ol start="4">
+<li>
+<p>Apply each application one-by-one, making sure there are no notable differences using ArgoCD's <code>APP DIFF</code> feature - again, labels can mostly be ignored given the differences in how ArgoCD and Flux handle ownership - if there are differences or errors in deploying the Helm charts, fix them! Especially with a Helm source, ArgoCD is much more picky than the Flux Helm Operator - ArgoCD will most likely throw errors which the Flux Helm Operator did not.</p>
+</li>
+<li>
+<p>We can't just delete the <code>HelmReleases</code>, beceause that will cause the Flux Helm Operator to <em>delete</em> those resources, which is not what we want. So, when we delete the <code>HelmReleases</code>, we need to make sure the Flux Helm Operator is not alive to see it. So, when everything has been checked, you can continue with the following steps:</p>
+<ul>
+<li>Delete Flux Helm Operator deployment</li>
+<li>Delete Flux deployment (in order to avoid resources being deployed again - namely the Helm operator most importantly)</li>
+<li>Delete the <code>HelmRelease</code> CRD from K8s API - this will remove <em>all</em> of the applied <code>HelmRelease</code> CRDs</li>
+</ul>
+</li>
+<li>
+<p>You have now successfully migrated from Flux to ArgoCD with no downtime!</p>
+</li>
+</ol>
+
+      </div>
+
+      <footer>
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "spamburger" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </footer>
+    </article>
+
+    
+  </section>
+
+      </div>
+
+      <footer class="footer">
+  <section class="container">
+    
+      <p>Things and stuff.</p>
+    
+     © 2019
+    
+    
+  </section>
+</footer>
+
+    </main>
+
+    
+
+  </body>
+
+</html>

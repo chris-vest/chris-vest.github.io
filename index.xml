@@ -6,10 +6,20 @@
     <description>Recent content on chris vest</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 19 Feb 2019 13:23:25 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 28 Nov 2019 10:46:21 +0000</lastBuildDate>
     
 	<atom:link href="//chrisve.st/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Migrating to ArgoCD from Flux &amp; Flux Helm Operator</title>
+      <link>//chrisve.st/posts/argo-cd-flux-migration/</link>
+      <pubDate>Thu, 28 Nov 2019 10:46:21 +0000</pubDate>
+      
+      <guid>//chrisve.st/posts/argo-cd-flux-migration/</guid>
+      <description>Migrating to ArgoCD from Weaveworks Flux &amp;amp; Flux Helm Operator   Add all raw manifests (i.e. not HelmReleases) to your repo(s) which ArgoCD is watching
+  Add references to these manifests as Applications in ArgoCD - do not enable pruning unless you want to play with fire; you can also disable autosync if you want in order to avoid never-ending deployment cycles if differences are found between what Flux and ArgoCD see as the state.</description>
+    </item>
     
     <item>
       <title>Terraform Cycle</title>

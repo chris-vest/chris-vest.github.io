@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>kubernetes on chris vest</title>
-    <link>//chrisve.st/tags/kubernetes/</link>
-    <description>Recent content in kubernetes on chris vest</description>
+    <title>argocd on chris vest</title>
+    <link>//chrisve.st/tags/argocd/</link>
+    <description>Recent content in argocd on chris vest</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Thu, 28 Nov 2019 10:46:21 +0000</lastBuildDate>
     
-	<atom:link href="//chrisve.st/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="//chrisve.st/tags/argocd/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -19,17 +19,6 @@
       <guid>//chrisve.st/posts/argo-cd-flux-migration/</guid>
       <description>Migrating to ArgoCD from Weaveworks Flux &amp;amp; Flux Helm Operator   Add all raw manifests (i.e. not HelmReleases) to your repo(s) which ArgoCD is watching
   Add references to these manifests as Applications in ArgoCD - do not enable pruning unless you want to play with fire; you can also disable autosync if you want in order to avoid never-ending deployment cycles if differences are found between what Flux and ArgoCD see as the state.</description>
-    </item>
-    
-    <item>
-      <title>Using Vault PKI with the Strimzi Kafka Operator on Kubernetes</title>
-      <link>//chrisve.st/posts/vault-pki-strimzi/</link>
-      <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
-      
-      <guid>//chrisve.st/posts/vault-pki-strimzi/</guid>
-      <description>I originally wrote this post for the Strimzi blog after having worked on it for a project at my work. I figured it would benefit the community to know how I had done this. Since I had received so much help in general regarding running Kafka on Kubernetes from the Strimzi guys, this seemed like an appropriate way to give back!
-Here is the post in full&amp;hellip;
-Make sure to check out the Strimzi project!</description>
     </item>
     
   </channel>

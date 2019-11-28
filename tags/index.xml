@@ -6,10 +6,73 @@
     <description>Recent content in Tags on chris vest</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 16 Nov 2018 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 28 Nov 2019 10:46:21 +0000</lastBuildDate>
     
 	<atom:link href="//chrisve.st/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>argo-cd</title>
+      <link>//chrisve.st/tags/argo-cd/</link>
+      <pubDate>Thu, 28 Nov 2019 10:46:21 +0000</pubDate>
+      
+      <guid>//chrisve.st/tags/argo-cd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>argocd</title>
+      <link>//chrisve.st/tags/argocd/</link>
+      <pubDate>Thu, 28 Nov 2019 10:46:21 +0000</pubDate>
+      
+      <guid>//chrisve.st/tags/argocd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>flux</title>
+      <link>//chrisve.st/tags/flux/</link>
+      <pubDate>Thu, 28 Nov 2019 10:46:21 +0000</pubDate>
+      
+      <guid>//chrisve.st/tags/flux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>helm</title>
+      <link>//chrisve.st/tags/helm/</link>
+      <pubDate>Thu, 28 Nov 2019 10:46:21 +0000</pubDate>
+      
+      <guid>//chrisve.st/tags/helm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes</title>
+      <link>//chrisve.st/tags/kubernetes/</link>
+      <pubDate>Thu, 28 Nov 2019 10:46:21 +0000</pubDate>
+      
+      <guid>//chrisve.st/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>operator</title>
+      <link>//chrisve.st/tags/operator/</link>
+      <pubDate>Thu, 28 Nov 2019 10:46:21 +0000</pubDate>
+      
+      <guid>//chrisve.st/tags/operator/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>weaveworks</title>
+      <link>//chrisve.st/tags/weaveworks/</link>
+      <pubDate>Thu, 28 Nov 2019 10:46:21 +0000</pubDate>
+      
+      <guid>//chrisve.st/tags/weaveworks/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>kafka</title>
@@ -17,15 +80,6 @@
       <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
       
       <guid>//chrisve.st/tags/kafka/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kubernetes</title>
-      <link>//chrisve.st/tags/kubernetes/</link>
-      <pubDate>Fri, 16 Nov 2018 12:00:00 +0000</pubDate>
-      
-      <guid>//chrisve.st/tags/kubernetes/</guid>
       <description></description>
     </item>
     
